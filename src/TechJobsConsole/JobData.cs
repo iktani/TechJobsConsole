@@ -23,10 +23,11 @@ namespace TechJobsConsole
 
         
 
-        public static List<Dictionary<string, string>> FindAll()
+        public static IList<Dictionary<string, string>> FindAll()
         {
             LoadData();
-            return AllJobs;
+            IList<Dictionary<string, string>> roAllJobs = AllJobs.AsReadOnly();
+            return roAllJobs;
         }
 
         /*
