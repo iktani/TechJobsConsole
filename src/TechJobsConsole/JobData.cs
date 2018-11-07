@@ -1,14 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace TechJobsConsole
 {
+    public static class StringExtensions
+    {
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source != null && toCheck != null && source.IndexOf(toCheck, comp) >= 0;
+        }
+    }
+
+
     class JobData
     {
         static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();
         static bool IsDataLoaded = false;
+
+        
 
         public static List<Dictionary<string, string>> FindAll()
         {
@@ -37,7 +50,28 @@ namespace TechJobsConsole
             }
             return values;
         }
+        // Returns a list of search matches without duplicates.
 
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
+
+            List<Dictionary<string, string>> matches = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                foreach (string eachValue in row.Values)
+                {
+                    if (eachValue.Contains(value, StringComparison.OrdinalIgnoreCase) && !matches.Contains(row))
+                    {
+                        matches.Add(row);
+                    }
+                }
+            }
+            return matches;
+        }
+ 
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
             // load data, if not already loaded
@@ -49,7 +83,7 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (aValue.Contains(value, StringComparison.OrdinalIgnoreCase))
                 {
                     jobs.Add(row);
                 }

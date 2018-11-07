@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace TechJobsConsole
 {
@@ -43,6 +44,7 @@ namespace TechJobsConsole
                         List<string> results = JobData.FindAll(columnChoice);
 
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
+                        results.Sort();
                         foreach (string item in results)
                         {
                             Console.WriteLine(item);
@@ -63,7 +65,8 @@ namespace TechJobsConsole
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        searchResults = JobData.FindByValue(searchTerm);
+                        PrintJobs(searchResults);
                     }
                     else
                     {
@@ -100,25 +103,51 @@ namespace TechJobsConsole
                 }
 
                 string input = Console.ReadLine();
-                choiceIdx = int.Parse(input);
-
-                if (choiceIdx < 0 || choiceIdx >= choiceKeys.Length)
+                bool isValidInput = int.TryParse(input, out int inputNum);
+                choiceIdx = inputNum;
+                if (!isValidInput)
                 {
-                    Console.WriteLine("Invalid choices. Try again.");
+                    Console.WriteLine("Invalid or blank entry. Try again");
                 }
                 else
                 {
-                    isValidChoice = true;
+                    if (choiceIdx < 0 || choiceIdx >= choiceKeys.Length)
+                    {
+                        Console.WriteLine("Invalid choices. Try again.");
+                    }
+                    else
+                    {
+                        isValidChoice = true;
+                    }
                 }
-
             } while (!isValidChoice);
-
+            
             return choiceKeys[choiceIdx];
         }
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("printJobs is not implemented yet");
+            if (someJobs.Count == 0)
+            {
+                Console.WriteLine("There are no results");
+            }
+            else
+            {
+                for (int i=0; i < someJobs.Count; i++)
+                {
+                    StringBuilder singleJob = new StringBuilder();
+                    foreach (string field in someJobs[i].Keys)
+                    {
+                        singleJob.Append(field);
+                        singleJob.Append(": ");
+                        singleJob.Append(someJobs[i][field]);
+                        singleJob.Append("\n");
+                    }
+                    Console.WriteLine("\n*****");
+                    Console.WriteLine(singleJob);
+                    Console.WriteLine("*****");
+                }
+            }
         }
     }
 }
